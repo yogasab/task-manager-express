@@ -1,0 +1,20 @@
+{
+	"name": "node-task-manager-app",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"dependencies": {
+		"express": "^4.17.1",
+		"mongoose": "^6.1.1",
+		"nodemon": "^2.0.15",
+		"validator": "^13.7.0"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"dev": "nodemon src/index.js",
+		"prod": "node src/index.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}
