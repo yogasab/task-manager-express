@@ -1,4 +1,5 @@
 const express = require("express");
+const auth = require("../middleware/auth");
 const User = require("../models/user");
 const router = new express.Router();
 
@@ -24,16 +25,18 @@ router.post("/users", async (req, res) => {
 	}
 });
 
-router.get("/users", async (req, res) => {
-	try {
-		const users = await User.find({});
-		if (!users.length) {
-			res.send({ message: "There are no current user yet" });
-		}
-		res.status(200).send(users);
-	} catch (err) {
-		res.status(500).send(err);
-	}
+router.get("/users", auth, async (req, res) => {
+	const { user } = req;
+	res.send(user);
+	// try {
+	// 	const users = await User.find({});
+	// 	if (!users.length) {
+	// 		res.send({ message: "There are no current user yet" });
+	// 	}
+	// 	res.status(200).send(users);
+	// } catch (err) {
+	// 	res.status(500).send(err);
+	// }
 });
 
 router.get("/users/:id", async (req, res) => {
