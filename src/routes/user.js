@@ -14,6 +14,30 @@ router.post("/login", async (req, res) => {
 	}
 });
 
+// Logout the users who send the request
+router.post("/logout", auth, async (req, res) => {
+	try {
+		req.user.tokens = req.user.tokens.filter((token) => {
+			// Return the token that doesnt match with the one who sending request
+			return token.token !== req.token;
+		});
+		await req.user.save();
+		res.send();
+	} catch (err) {
+		res.status(500).send();
+	}
+});
+// Logout to all users
+router.post("/logout/all", auth, async (req, res) => {
+	try {
+		req.user.tokens = [];
+		await req.user.save();
+		res.send();
+	} catch (err) {
+		res.status(500).send();
+	}
+});
+
 router.post("/users", async (req, res) => {
 	const user = new User(req.body);
 	try {

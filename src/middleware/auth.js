@@ -12,6 +12,7 @@ const auth = async (req, res, next) => {
 			_id: decodedPayloadToken._id,
 			"tokens.token": token,
 		});
+		req.token = token;
 		req.user = user;
 		if (!user) {
 			throw new Error();
