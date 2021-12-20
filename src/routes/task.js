@@ -19,13 +19,27 @@ router.post("/tasks", auth, async (req, res) => {
 });
 
 router.get("/tasks", auth, async (req, res) => {
+	const match = {};
+	if (req.query.completed) {
+		match.completed = req.query.completed === "true";
+	}
 	try {
 		// const tasks = await Task.find({ owner: req.user._id });
 		// if (!tasks.length) {
 		// 	res.send({ message: "There are no tasks yet" });
 		// }
 		// res.send(tasks);
-		await req.user.populate("tasks");
+		await req.user.populate({
+			path: "tasks",
+			match,
+			options: {
+				limit: parseInt(req.query.limit),
+				skip: parseInt(req.query.skip),
+			},
+		});
+		if (!req.user.tasks.length) {
+			res.status(200).send({ message: "There are no task yet" });
+		}
 		res.send(req.user.tasks);
 	} catch (err) {
 		res.status(500).send(err);
