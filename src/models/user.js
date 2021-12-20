@@ -5,53 +5,56 @@ const jwt = require("jsonwebtoken");
 const Task = require("./task");
 
 // User Model
-const userSchema = new mongoose.Schema({
-	name: {
-		type: String,
-		required: true,
-		trim: true,
-	},
-	email: {
-		type: String,
-		required: true,
-		unique: true,
-		trim: true,
-		lowercase: true,
-		validate(value) {
-			if (!validator.isEmail(value)) {
-				throw new Error("Email is invalid");
-			}
+const userSchema = new mongoose.Schema(
+	{
+		name: {
+			type: String,
+			required: true,
+			trim: true,
 		},
-	},
-	age: {
-		type: Number,
-		default: 0,
-		validate(value) {
-			if (value < 0) {
-				throw new Error("Age must be greater than zero");
-			}
-		},
-	},
-	password: {
-		type: String,
-		required: true,
-		minLength: 7,
-		trim: true,
-		validate(value) {
-			if (value.toLowerCase().includes("password")) {
-				throw new Error("Cannot use 'password' as password value");
-			}
-		},
-	},
-	tokens: [
-		{
-			token: {
-				type: String,
-				required: true,
+		email: {
+			type: String,
+			required: true,
+			unique: true,
+			trim: true,
+			lowercase: true,
+			validate(value) {
+				if (!validator.isEmail(value)) {
+					throw new Error("Email is invalid");
+				}
 			},
 		},
-	],
-});
+		age: {
+			type: Number,
+			default: 0,
+			validate(value) {
+				if (value < 0) {
+					throw new Error("Age must be greater than zero");
+				}
+			},
+		},
+		password: {
+			type: String,
+			required: true,
+			minLength: 7,
+			trim: true,
+			validate(value) {
+				if (value.toLowerCase().includes("password")) {
+					throw new Error("Cannot use 'password' as password value");
+				}
+			},
+		},
+		tokens: [
+			{
+				token: {
+					type: String,
+					required: true,
+				},
+			},
+		],
+	},
+	{ timestamps: true }
+);
 
 // For user
 userSchema.methods.generateAuthToken = async function () {
