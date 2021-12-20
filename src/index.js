@@ -20,3 +20,18 @@ app.use(TaskRouter);
 app.listen(port, () => {
 	console.log(`Listening to ${port}`);
 });
+
+// const Task = require("./models/task");
+// const User = require("./models/user");
+
+// const main = async () => {
+// const task = await Task.findById("61bff7ce91f45b48af9441b3");
+// await task.populate("owner");
+// console.log(task.owner);
+
+// const user = await User.findById("61bff79591f45b48af9441a8");
+// await user.populate("tasks");
+// console.log(user.tasks);
+// };
+
+// main();
