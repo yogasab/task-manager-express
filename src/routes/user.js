@@ -1,7 +1,19 @@
 const express = require("express");
 const auth = require("../middleware/auth");
 const User = require("../models/user");
+const multer = require("multer");
 const router = new express.Router();
+
+const uploads = multer({
+	dest: "images",
+	limits: 1000000,
+	fileFilter(req, file, cb) {
+		if (!file.originalname.match(/\.(doc|docx)$/)) {
+			return cb(new Error("Please upload a docx/doc file"));
+		}
+		cb(undefined, true);
+	},
+});
 
 router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
@@ -118,6 +130,10 @@ router.delete("/users/me", auth, async (req, res) => {
 	} catch (err) {
 		res.status(500).send(err);
 	}
+});
+
+router.post("/users/me/avatar", uploads.single("avatar"), (req, res) => {
+	res.status(201).send();
 });
 
 module.exports = router;
