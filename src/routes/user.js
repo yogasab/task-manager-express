@@ -5,7 +5,7 @@ const multer = require("multer");
 const router = new express.Router();
 
 const uploads = multer({
-	dest: "images",
+	// dest: "images",
 	limits: {
 		fileSize: 1000000,
 	},
@@ -136,13 +136,41 @@ router.delete("/users/me", auth, async (req, res) => {
 
 router.post(
 	"/users/me/avatar",
+	auth,
 	uploads.single("avatar"),
-	(req, res) => {
+	async (req, res) => {
+		req.user.avatar = req.file.buffer;
+		console.log(req.file.buffer);
+		await req.user.save();
 		res.status(201).send({ message: "File uploaded successfully" });
 	},
 	(error, req, res, next) => {
 		res.status(400).send({ error: error.message });
 	}
 );
+
+router.delete(
+	"/users/me/avatar",
+	auth,
+	uploads.single("avatar"),
+	async (req, res) => {
+		req.user.avatar = undefined;
+		await req.user.save();
+		res.status(204).send({ message: "File deleted successfully" });
+	}
+);
+
+router.get("/users/:id/avatar", async (req, res) => {
+	try {
+		const user = await User.findById(req.params.id);
+		if (!user || !user.avatar) {
+			throw new Error("User/Avatar not found, please try again later");
+		}
+		res.set("Content-Type", "image/jpg");
+		res.send(user.avatar).status(200);
+	} catch (error) {
+		res.status(404).send({ error: "User/Avatar not found" });
+	}
+});
 
 module.exports = router;
