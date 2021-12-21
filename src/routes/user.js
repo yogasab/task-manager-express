@@ -6,10 +6,12 @@ const router = new express.Router();
 
 const uploads = multer({
 	dest: "images",
-	limits: 1000000,
+	limits: {
+		fileSize: 1000000,
+	},
 	fileFilter(req, file, cb) {
-		if (!file.originalname.match(/\.(doc|docx)$/)) {
-			return cb(new Error("Please upload a docx/doc file"));
+		if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+			return cb(new Error("File must be jpg, jpeg, or png"));
 		}
 		cb(undefined, true);
 	},
@@ -132,8 +134,15 @@ router.delete("/users/me", auth, async (req, res) => {
 	}
 });
 
-router.post("/users/me/avatar", uploads.single("avatar"), (req, res) => {
-	res.status(201).send();
-});
+router.post(
+	"/users/me/avatar",
+	uploads.single("avatar"),
+	(req, res) => {
+		res.status(201).send({ message: "File uploaded successfully" });
+	},
+	(error, req, res, next) => {
+		res.status(400).send({ error: error.message });
+	}
+);
 
 module.exports = router;
