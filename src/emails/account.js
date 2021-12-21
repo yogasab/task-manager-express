@@ -16,9 +16,41 @@ const mailOptions = {
 	text: "That was easy!",
 };
 
-transporter.sendMail(mailOptions, (err, info) => {
-	if (err) {
-		console.log(err);
-	}
-	console.log("Email sent: " + info);
-});
+const sendWelcomeEmail = (email, name) => {
+	transporter.sendMail(
+		{
+			from: "yoga.baskoro.te18@mhsw.pnj.ac.id",
+			to: email,
+			subject: "Thanks for signup!",
+			text: `Hello, ${name}. Tell me more that you can get along with the app`,
+		},
+		(err, info) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log("Email sent");
+		}
+	);
+};
+
+const sendCancelationEmail = (email, name) => {
+	transporter.sendMail(
+		{
+			from: "yoga.baskoro.te18@mhsw.pnj.ac.id",
+			to: email,
+			subject: "Subscription Canceled",
+			text: `Hello, ${name}. We are sadly to informed you that subscription is canceled. You can keep receive monthly promo through this email. Thank, you.`,
+		},
+		(err, info) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log("Email sent");
+		}
+	);
+};
+
+module.exports = {
+	sendWelcomeEmail,
+	sendCancelationEmail,
+};
