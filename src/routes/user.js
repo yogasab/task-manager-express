@@ -2,6 +2,7 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const User = require("../models/user");
 const multer = require("multer");
+const sharp = require("sharp");
 const router = new express.Router();
 
 const uploads = multer({
@@ -134,13 +135,18 @@ router.delete("/users/me", auth, async (req, res) => {
 	}
 });
 
+// Users Avatar
 router.post(
 	"/users/me/avatar",
 	auth,
 	uploads.single("avatar"),
 	async (req, res) => {
-		req.user.avatar = req.file.buffer;
-		console.log(req.file.buffer);
+		const bufferedImage = await sharp(req.file.buffer)
+			.resize({ width: 250, height: 250 })
+			.png()
+			.toBuffer();
+		// req.user.avatar = req.file.buffer;
+		req.user.avatar = bufferedImage;
 		await req.user.save();
 		res.status(201).send({ message: "File uploaded successfully" });
 	},
@@ -166,7 +172,7 @@ router.get("/users/:id/avatar", async (req, res) => {
 		if (!user || !user.avatar) {
 			throw new Error("User/Avatar not found, please try again later");
 		}
-		res.set("Content-Type", "image/jpg");
+		res.set("Content-Type", "image/png");
 		res.send(user.avatar).status(200);
 	} catch (error) {
 		res.status(404).send({ error: "User/Avatar not found" });
