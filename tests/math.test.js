@@ -2,6 +2,7 @@ const {
 	calculateTip,
 	fahrenheitToCelcius,
 	celciusToFahrenheit,
+	add,
 } = require("../src/test/math");
 
 test("Calculate total amount plus tip", () => {
@@ -25,4 +26,16 @@ test("Convert temperature from Fahrenheit to Celcius", () => {
 test("Convert temperature from Celcius to Fahrenheit", () => {
 	const value = celciusToFahrenheit(10);
 	expect(value).toBe(0.5625);
+});
+
+test("Add two numbers using regular asynchronus", (done) => {
+	add(2, 3).then((total) => {
+		expect(total).toBe(5);
+		done();
+	});
+});
+
+test("Add two numbers using async/await", async () => {
+	const total = await add(2, 3);
+	expect(total).toBe(5);
 });
