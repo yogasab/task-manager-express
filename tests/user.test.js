@@ -3,11 +3,20 @@ global.TextDecoder = require("util").TextDecoder;
 const request = require("supertest");
 const app = require("../src/app");
 const User = require("../src/models/user");
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
+const userOneID = new mongoose.Types.ObjectId();
 const userOne = {
+	_id: userOneID,
 	name: "Alexander",
 	email: "alexander@gmail.com",
 	password: "query1234",
+	tokens: [
+		{
+			token: jwt.sign({ _id: userOneID }, process.env.JWT_SECRET),
+		},
+	],
 };
 
 beforeEach(async () => {
@@ -37,4 +46,28 @@ test("Login the unexisted user", async () => {
 		.post("/login")
 		.send({ email, password: "iwdnindindwindw" })
 		.expect(400);
+});
+
+test("Get the registered profile user", async () => {
+	await request(app)
+		.get("/users/me")
+		.set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+		.send()
+		.expect(200);
+});
+
+test("Get the profile with unauthorized user", async () => {
+	await request(app).get("/users/me").send().expect(401);
+});
+
+test("Delete the current user", async () => {
+	await request(app)
+		.delete("/users/me")
+		.set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+		.send()
+		.expect(200);
+});
+
+test("Delete the current user with unauthorized user", async () => {
+	await request(app).delete("/users/me").send().expect(401);
 });
