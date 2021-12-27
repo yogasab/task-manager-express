@@ -5,10 +5,9 @@ const router = new express.Router();
 
 router.post("/tasks", auth, async (req, res) => {
 	// const task = new Task(req.body);
-	const { user, body } = req;
 	const task = new Task({
-		...body,
-		owner: user._id,
+		...req.body,
+		owner: req.user._id,
 	});
 	try {
 		await task.save();
@@ -109,7 +108,7 @@ router.delete("/tasks/:id", auth, async (req, res) => {
 		}
 		res.send({ message: "Task deleted successfully" });
 	} catch (err) {
-		res.send(err);
+		res.send();
 	}
 });
 
