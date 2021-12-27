@@ -3,26 +3,9 @@ global.TextDecoder = require("util").TextDecoder;
 const request = require("supertest");
 const app = require("../src/app");
 const User = require("../src/models/user");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+const { setupDatabase, userOneID, userOne } = require("./db/db");
 
-const userOneID = new mongoose.Types.ObjectId();
-const userOne = {
-	_id: userOneID,
-	name: "Alexander",
-	email: "alexander@gmail.com",
-	password: "query1234",
-	tokens: [
-		{
-			token: jwt.sign({ _id: userOneID }, process.env.JWT_SECRET),
-		},
-	],
-};
-
-beforeEach(async () => {
-	await User.deleteMany();
-	await new User(userOne).save();
-});
+beforeEach(setupDatabase);
 
 test("Register a new user", async () => {
 	const response = await request(app)
@@ -119,7 +102,7 @@ test("Test user can updated data", async () => {
 });
 
 test("Test user failure when updated unexisted fields", async () => {
-	const response = await request(app)
+	await request(app)
 		.patch("/users/me")
 		.set("Authorization", `Bearer ${userOne.tokens[0].token}`)
 		.send({ location: "Jakarta" })
