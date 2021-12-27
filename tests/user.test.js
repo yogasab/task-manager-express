@@ -95,3 +95,33 @@ test("Delete the current user", async () => {
 test("Delete the current user with unauthorized user", async () => {
 	await request(app).delete("/users/me").send().expect(401);
 });
+
+test("User can upload profile picture", async () => {
+	await request(app)
+		.post("/users/me/avatar")
+		.set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+		.attach("avatar", "tests/fixtures/pas-foto.png")
+		.expect(201);
+
+	const user = await User.findById(userOneID);
+	expect(user.avatar).toEqual(expect.any(Buffer));
+});
+
+test("Test user can updated data", async () => {
+	const response = await request(app)
+		.patch("/users/me")
+		.set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+		.send({ name: "Updated" })
+		.expect(200);
+
+	const user = await User.findById(userOneID);
+	expect(user.name).toBe(response.body.name);
+});
+
+test("Test user failure when updated unexisted fields", async () => {
+	const response = await request(app)
+		.patch("/users/me")
+		.set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+		.send({ location: "Jakarta" })
+		.expect(400);
+});
